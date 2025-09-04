@@ -22,6 +22,9 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
+    # Define a relationship to HousekeepingTask, indicating a user can be assigned multiple tasks
+    assigned_housekeeping_tasks = relationship("HousekeepingTask", back_populates="assigned_to_user")
+
     # __repr__ method for better debugging
     def __repr__(self):
         return f"<User(id={self.id}, username={self.username}, email={self.email})>"

@@ -1,6 +1,6 @@
 import os
 from datetime import timedelta, datetime, timezone
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -92,19 +92,19 @@ def get_current_user(
 
 
 # --- Dependecency to check user roles for authorization ---
-def get_current_active_user(
-        token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
-        ) -> models.User:
+def get_current_user(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+) -> models.User:
     """
-    Dependecy to get the current active user from the JWT token.
-    Raises HTTPException if the user is inactive.
+    Dependency to get the current authenticated user from the JWT token.
+    Raises HTTPException if token is invalid or user not found.
     """
     token_data = decode_access_token(token)
     user = db.query(models.User).filter(models.User.username == token_data.username).first()
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Inactive user",
+            detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
     return user
@@ -120,12 +120,16 @@ def authenticate_user(db: Session, username: str, password: str) -> Optional[mod
 
 
 # --- Function to check user roles for authorization ---
-def check_user_role(user: models.User = Depends(get_current_active_user), required_role: str = 'admin') -> bool:
-    """Check if the user has the required role."""
-    if user.role != required_role:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"User does not have the required role: {required_role}",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return True
+def RoleChecker(allowed_roles: List[str]):
+    """
+    Dependency factory to check if a user has one of the required roles.
+    Raises a 403 Forbidden error if the user's role is not in the allowed list.
+    """
+    def check_role(current_user: models.User = Depends(get_current_user)):
+        if current_user.role not in allowed_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not enough permissions."
+            )
+        return current_user
+    return check_role
