@@ -172,7 +172,7 @@ def delete_guest(guest_id: int, db: Session = Depends(get_db)):
     return {"message": "Guest deleted successfully"}
 
 # --- Booking Endpoints ---
-@app.post("/bookings/", response_model=schemas.Booking, status_code=status.HTTP_201_CREATED, dependencies=[Depends(auth.RoleChecker(['receiptionist', 'admin']))])
+@app.post("/bookings/", response_model=schemas.Booking, status_code=status.HTTP_201_CREATED, dependencies=[Depends(auth.RoleChecker(['receptionist', 'admin']))])
 def create_booking(booking: schemas.BookingCreate, db: Session = Depends(get_db)):
     guest = crud.get_guest(db, booking.guest_id)
     if not guest:

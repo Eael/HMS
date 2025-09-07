@@ -16,7 +16,7 @@ class User(Base):
     first_name = Column(String, nullable=True)
     last_name = Column(String, nullable=True)
     # Define roles using an Enum
-    role = Column(Enum('admin', 'receiptionist', 'housekeeping', 'guest', name='user_roles'), default='guest')
+    role = Column(Enum('admin', 'receptionist', 'housekeeping', 'guest', name='user_roles'), default='guest')
     phone_number = Column(String, nullable=True)
     address = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

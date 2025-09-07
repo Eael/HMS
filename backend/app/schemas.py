@@ -16,7 +16,7 @@ class UserBase(BaseModel):
     address: Optional[str] = Field(None, max_length=500)
 
     # Role will be validated against the Enum defined in the model
-    role: str = Field(default='guest', pattern='^(admin|receiptionist|housekeeping|guest)$')
+    role: str = Field(default='guest', pattern='^(admin|receptionist|housekeeping|guest)$')
 
 
 # Schema for creating a new user
@@ -32,7 +32,7 @@ class UserUpdate(UserBase):
     last_name: Optional[str] = Field(None, max_length=50)
     phone_number: Optional[str] = Field(None, max_length=15)
     address: Optional[str] = Field(None, max_length=500)
-    role: Optional[str] = Field(None, pattern='^(admin|receiptionist|housekeeping|guest)$')
+    role: Optional[str] = Field(None, pattern='^(admin|receptionist|housekeeping|guest)$')
     password: Optional[str] = Field(None, min_length=8, max_length=128)  # Password is optional for updates
 
 
